@@ -88,11 +88,15 @@ namespace IMU_gNeC
 
         List<float> dwellAngle = new List<float>();
         private bool dwell = false;
+        
+        string iFeelLuckyPortSetup;
+        int rotationSetup;
+
         #endregion
 
         #region methods
       
-        public bool connectIMUkownCOM(string iFeelLuckyPort, int rotation)
+        private bool connectIMUkownCOM(string iFeelLuckyPort, int rotation)
         {
 
             initializeSerialPort();
@@ -397,30 +401,33 @@ namespace IMU_gNeC
             //}
         }
 
-        public void startReadingIMU()
+        public bool startReadingIMU(string iFeelLuckyPort, int rotation)
         {
-            //if (ENLAZA_listo)
-            //{
+
+            this.iFeelLuckyPortSetup = iFeelLuckyPort;
+            this.rotationSetup = rotation;
 
             try
             {
-                initializeThreadIMU();
+                workerIMU = new Thread(threadIMU);
+                workerIMU.Name = "workerA";
             }
-            catch (Exception e) { }
+            catch (Exception e) { return false; }
 
             try
             {
                 workerIMU.Start();
             }
-            catch (Exception e) { }
+            catch (Exception e) { return false; }
 
             try
             {
                 IMUAng.ImuYPR += new IMUEventHandler(rYPR.IMUrecieved);
                 ImuInitgame.InitEndGame += new InitEndGameEventHandler(InitEndGamerecieved);
                 ImuConfigPar.ImuConfig += new IMUComandEventHandler(IMUComandrecieved);
+                return true;
             }
-            catch (Exception e) { }
+            catch (Exception e) { return false; }
             //}
         }
         
@@ -434,6 +441,24 @@ namespace IMU_gNeC
             catch (Exception e) { }
         }
 
+        
+        public void threadIMU()
+        {
+            //configurar y abrir puerto
+            connectIMUkownCOM(iFeelLuckyPortSetup, rotationSetup);
+
+            while (workerIMU.IsAlive)
+            {
+                readIMU();
+            }
+
+        }
+
+
+
+
+
+
         private void initializeSerialPort()
         {
             serialPort = new SerialPort();
@@ -441,14 +466,48 @@ namespace IMU_gNeC
             serialPort.WriteTimeout = 500;
         }
 
-        public void threadIMU()
+        public static bool setPort(string portName)
         {
-            while (workerIMU.IsAlive)
+            int baudRate = 57600;
+            Parity parity = System.IO.Ports.Parity.None;
+            int dataBits = 8;
+            StopBits stopBits = System.IO.Ports.StopBits.One;
+            Handshake handshake = System.IO.Ports.Handshake.None;
+            try
             {
-                readIMU();
+                serialPort.PortName = portName;
+                serialPort.BaudRate = baudRate;
+                serialPort.Parity = parity;
+                serialPort.DataBits = dataBits;
+                serialPort.StopBits = stopBits;
+                serialPort.Handshake = handshake;
+
+                return true;
             }
+            catch (Exception e) { return false; }
 
         }
+
+        public static bool openPort(string portName)
+        {
+            try
+            {
+                serialPort.Open();
+                return true; // Success
+            }
+            catch (Exception e) { return false; }
+        }
+
+
+
+
+
+
+
+
+
+
+
 
         public void readIMU()
         {
@@ -1071,38 +1130,6 @@ namespace IMU_gNeC
             return clic_flag;
         }
         
-        public static bool setPort(string portName)
-        {
-            int baudRate = 57600;
-            Parity parity = System.IO.Ports.Parity.None;
-            int dataBits = 8;
-            StopBits stopBits = System.IO.Ports.StopBits.One;
-            Handshake handshake = System.IO.Ports.Handshake.None;
-            try
-            {
-                serialPort.PortName = portName;
-                serialPort.BaudRate = baudRate;
-                serialPort.Parity = parity;
-                serialPort.DataBits = dataBits;
-                serialPort.StopBits = stopBits;
-                serialPort.Handshake = handshake;
-
-                return true;
-            }
-            catch (Exception e) { return false; }
-
-        }
-
-        public static bool openPort(string portName)
-        {
-            try
-            {
-                serialPort.Open();
-                return true; // Success
-            }
-            catch (Exception e) {return false; }
-        }
-
         public int maximo(double a, double b, double c)
         {
 
