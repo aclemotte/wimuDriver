@@ -66,6 +66,10 @@ namespace IMU_gNeC
         // ImuPerm: Instantiates the event source.
         public ImuPermanencia imuPerm = new ImuPermanencia();
 
+
+        public ImuReady imuReady = new ImuReady();
+
+
         private float mainAngleROMrange = 30;
         private float secundaryAngle1ROMrange = 10;
         private float secundaryAngle2ROMrange = 10;
@@ -91,23 +95,27 @@ namespace IMU_gNeC
         public bool connectIMUkownCOM(string iFeelLuckyPort, int rotation)
         {
 
-            int iFeelLuckyConfiguration_status = 0;
+            initializeSerialPort();
+
+            bool iFeelLuckyConfiguration_status = false;
+
             try
             {
                 iFeelLuckyConfiguration_status = setPort(iFeelLuckyPort);
             }
-            catch (Exception e) { }
+            catch (Exception e) { return false; }
 
-            if (iFeelLuckyConfiguration_status == 1)
+            if (iFeelLuckyConfiguration_status)
             {
                 // CONEXION
-                int iFeelLuckyconexion_status = 0;
+                bool iFeelLuckyconexion_status = false;
                 try
                 {
                     iFeelLuckyconexion_status = openPort(iFeelLuckyPort);
                 }
-                catch (Exception e) { }
-                if (iFeelLuckyconexion_status == 1)
+                catch (Exception e) { return false; }
+
+                if (iFeelLuckyconexion_status)
                 {
                     port_detected = true;
                     IMUPort = iFeelLuckyPort;
@@ -146,15 +154,15 @@ namespace IMU_gNeC
 
                     if ((port_detected == false) & (ENLAZA_listo == false))
                     {
-                        int configuration_status = 0;
+                        bool configuration_status = false;
                         try
                         {
                             configuration_status = setPort(port);
                         }
                         catch (Exception e) { }
-                        if (configuration_status == 1)
+                        if (configuration_status)
                         {
-                            int conexion_status = 0;
+                            bool conexion_status = false;
 
                             try
                             {
@@ -162,7 +170,7 @@ namespace IMU_gNeC
                             }
                             catch (Exception e) { }
 
-                            if (conexion_status == 1)
+                            if (conexion_status)
                             {
                                 port_detected = true;
                                 IMUPort = port;
@@ -209,23 +217,24 @@ namespace IMU_gNeC
             }
             catch (Exception e) { }
             
-            int iFeelLuckyConfiguration_status=0;
+            bool iFeelLuckyConfiguration_status = false;
             try
             {
                 iFeelLuckyConfiguration_status = setPort(iFeelLuckyPort);
             }
             catch (Exception e){ }
 
-            if (iFeelLuckyConfiguration_status == 1)
+            if (iFeelLuckyConfiguration_status)
             {
                 // CONEXION
-                int iFeelLuckyconexion_status = 0;
+                bool iFeelLuckyconexion_status = false;
                 try
                 {
                     iFeelLuckyconexion_status = openPort(iFeelLuckyPort);
                 }
-                catch (Exception e){ }
-                if (iFeelLuckyconexion_status == 1)
+                catch (Exception e) { return false; }
+
+                if (iFeelLuckyconexion_status)
                 {
                     port_detected = true;
                     IMUPort = iFeelLuckyPort;
@@ -261,15 +270,15 @@ namespace IMU_gNeC
 
                     if ((port_detected == false) & (ENLAZA_listo == false))
                     {
-                        int configuration_status = 0;
+                        bool configuration_status = false;
                         try
                         {
                             configuration_status = setPort(port);
                         }
                         catch (Exception e) { }
-                        if (configuration_status == 1)
+                        if (configuration_status)
                         {
-                            int conexion_status = 0;
+                            bool conexion_status = false;
 
                             try
                             {
@@ -277,7 +286,7 @@ namespace IMU_gNeC
                             }
                             catch (Exception e) { }
 
-                            if (conexion_status == 1)
+                            if (conexion_status)
                             {
                                 port_detected = true;
                                 IMUPort = port;
@@ -425,7 +434,7 @@ namespace IMU_gNeC
             catch (Exception e) { }
         }
 
-        public void initializeSerialPort()
+        private void initializeSerialPort()
         {
             serialPort = new SerialPort();
             serialPort.ReadTimeout = 500;
@@ -1062,7 +1071,7 @@ namespace IMU_gNeC
             return clic_flag;
         }
         
-        public static int setPort(string portName)
+        public static bool setPort(string portName)
         {
             int baudRate = 57600;
             Parity parity = System.IO.Ports.Parity.None;
@@ -1078,20 +1087,20 @@ namespace IMU_gNeC
                 serialPort.StopBits = stopBits;
                 serialPort.Handshake = handshake;
 
-                return 1;
+                return true;
             }
-            catch (Exception e) { return 0; }
+            catch (Exception e) { return false; }
 
         }
 
-        public static int openPort(string portName)
+        public static bool openPort(string portName)
         {
             try
             {
                 serialPort.Open();
-                return 1; // Success
+                return true; // Success
             }
-            catch (Exception e) {return 0; }
+            catch (Exception e) {return false; }
         }
 
         public int maximo(double a, double b, double c)
@@ -1225,82 +1234,82 @@ namespace IMU_gNeC
 
         #region eventos YPR
 
-            #region clase generadora ImuYPR
+        #region clase generadora ImuYPR
 
-            public class IMUEventArgs : EventArgs
+        public class IMUEventArgs : EventArgs
+        {
+            private readonly float yaw = 0;
+            private readonly float pitch = 0;
+            private readonly float roll = 0;
+            // Constructor.
+            public IMUEventArgs(float yaw, float pitch, float roll)
             {
-                private readonly float yaw = 0;
-                private readonly float pitch = 0;
-                private readonly float roll = 0;
-                // Constructor.
-                public IMUEventArgs(float yaw, float pitch, float roll)
-                {
-                    this.yaw = yaw;
-                    this.pitch = pitch;
-                    this.roll = roll;
-                }
-                //Properties.
-                public float Yaw { get { return yaw; } }
-                public float Pitch { get { return pitch; } }
-                public float Roll { get { return roll; } }
+                this.yaw = yaw;
+                this.pitch = pitch;
+                this.roll = roll;
+            }
+            //Properties.
+            public float Yaw { get { return yaw; } }
+            public float Pitch { get { return pitch; } }
+            public float Roll { get { return roll; } }
+        }
+
+        public delegate void IMUEventHandler(object sender, IMUEventArgs e);
+
+        // The ImuYPR class that raises the IMU event.
+        //
+        public class IMUAngle
+        {
+            private float yaw = 0;
+            private float pitch = 0;
+            private float roll = 0;
+
+            public float Yaw
+            {
+                get { return yaw; }
+                set { yaw = value; }
+            }
+            public float Pitch
+            {
+                get { return pitch; }
+                set { pitch = value; }
+            }
+            public float Roll
+            {
+                get { return roll; }
+                set { roll = value; }
             }
 
-            public delegate void IMUEventHandler(object sender, IMUEventArgs e);
+            public event IMUEventHandler ImuYPR;
 
-            // The ImuYPR class that raises the IMU event.
-            //
-            public class IMUAngle
+            protected virtual void OnImuYPR(IMUEventArgs e)
             {
-                private float yaw = 0;
-                private float pitch = 0;
-                private float roll = 0;
-
-                public float Yaw
+                if (ImuYPR != null)
                 {
-                    get { return yaw; }
-                    set { yaw = value; }
-                }
-                public float Pitch
-                {
-                    get { return pitch; }
-                    set { pitch = value; }
-                }
-                public float Roll
-                {
-                    get { return roll; }
-                    set { roll = value; }
-                }
-
-                public event IMUEventHandler ImuYPR;
-
-                protected virtual void OnImuYPR(IMUEventArgs e)
-                {
-                    if (ImuYPR != null)
-                    {
-                        // Invokes the delegates. 
-                        ImuYPR(this, e);
-                    }
-                }
-
-                public void SendAngle()
-                {
-                    IMUEventArgs e = new IMUEventArgs(yaw, pitch, roll);
-                    OnImuYPR(e);
+                    // Invokes the delegates. 
+                    ImuYPR(this, e);
                 }
             }
 
-            #endregion
-
-            #region clase lectora ImuYPR
-
-            public class readImuYPR
+            public void SendAngle()
             {
-                public void IMUrecieved(object sender, IMUEventArgs e)
-                {
-                }
+                IMUEventArgs e = new IMUEventArgs(yaw, pitch, roll);
+                OnImuYPR(e);
             }
+        }
 
-            #endregion
+        #endregion
+
+        #region clase lectora ImuYPR
+
+        public class readImuYPR
+        {
+            public void IMUrecieved(object sender, IMUEventArgs e)
+            {
+            }
+        }
+
+        #endregion
 
         #endregion 
 
@@ -1731,6 +1740,68 @@ namespace IMU_gNeC
         #endregion
 
         #endregion
+
+
+
+
+
+
+        #region INTERPLAY: evento imuReady
+
+            #region clase generadora imuReady
+
+                public class ImuReadyEventArgs : EventArgs
+                {
+                    private readonly float alpha = 0;
+                    // Constructor.
+                    public ImuReadyEventArgs(float alpha)
+                    {
+                        this.alpha = alpha;
+                    }
+                    //Properties.
+                    public float Alpha { get { return alpha; } }
+                }
+
+                public delegate void ImuReadyEventHandler(object sender, ImuReadyEventArgs e);
+
+                public class ImuReady
+                {
+                    private float alpha = 0;
+
+                    public float Alpha
+                    {
+                        get { return alpha; }
+                        set { alpha = value; }
+                    }
+
+                    public event ImuReadyEventHandler ImuRea;
+
+                    protected virtual void OnImuReady(ImuReadyEventArgs e)
+                    {
+                        if (ImuRea != null)
+                        {
+                            // Invokes the delegates. 
+                            ImuRea(this, e);
+                        }
+                    }
+
+                    public void SendReady()
+                    {
+                        ImuReadyEventArgs e = new ImuReadyEventArgs(alpha);
+                        OnImuReady(e);
+                    }
+                }
+
+            #endregion
+
+        #endregion
+       
+
+
+
+
+
+
 
     #endregion
 
