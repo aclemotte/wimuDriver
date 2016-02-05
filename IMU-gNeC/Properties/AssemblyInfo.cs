@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // La información general sobre un ensamblado se controla mediante el siguiente 
 // conjunto de atributos. Cambie estos atributos para modificar la información
 // asociada con un ensamblado.
-[assembly: AssemblyTitle("IMU-gNeC-Interplay")]
+[assembly: AssemblyTitle("ImuLib")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard Company")]
-[assembly: AssemblyProduct("IMU-gNeC")]
-[assembly: AssemblyCopyright("Copyright © Hewlett-Packard Company 2016")]
+[assembly: AssemblyCompany("GNEC-CSIC")]
+[assembly: AssemblyProduct("ImuLib")]
+[assembly: AssemblyCopyright("Copyright © GNEC-CSIC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
