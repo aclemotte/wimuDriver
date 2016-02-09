@@ -9,9 +9,7 @@ using CSML;
 namespace IMU_gNeC
 {
     public class IMUClass
-    {
-        #region attributes
-
+    {        
         private static SerialPort serialPort;
         private string IMUPort;
         private bool port_detected = false;
@@ -92,10 +90,55 @@ namespace IMU_gNeC
         string iFeelLuckyPortSetup;
         int rotationSetup;
 
-        #endregion
 
-        #region methods
-      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public bool startReadingIMU(string iFeelLuckyPort, int rotation)
+        {
+
+            this.iFeelLuckyPortSetup = iFeelLuckyPort;
+            this.rotationSetup = rotation;
+
+            try
+            {
+                workerIMU = new Thread(threadIMU);
+                workerIMU.Name = "workerA";
+            }
+            catch (Exception e) { return false; }
+
+            try
+            {
+                workerIMU.Start();
+            }
+            catch (Exception e) { return false; }
+
+            try
+            {
+                IMUAng.ImuYPR += new IMUEventHandler(rYPR.IMUrecieved);
+                ImuInitgame.InitEndGame += new InitEndGameEventHandler(InitEndGamerecieved);
+                ImuConfigPar.ImuConfig += new IMUComandEventHandler(IMUComandrecieved);
+                return true;
+            }
+            catch (Exception e) { return false; }
+            //}
+        }
+        
         private bool connectIMUkownCOM(string iFeelLuckyPort, int rotation)
         {
 
@@ -146,188 +189,188 @@ namespace IMU_gNeC
             return ENLAZA_listo;
         }
 
-        public bool connectIMUunkownCOM(int rotation)
-        {
+        //private bool connectIMUunkownCOM(int rotation)
+        //{
        
-                string[] ports = SerialPort.GetPortNames();
-                int N = ports.Length;
+        //        string[] ports = SerialPort.GetPortNames();
+        //        int N = ports.Length;
 
-                for (int k = 0; k < N; k++)
-                {
-                    port = ports[k];
+        //        for (int k = 0; k < N; k++)
+        //        {
+        //            port = ports[k];
 
-                    if ((port_detected == false) & (ENLAZA_listo == false))
-                    {
-                        bool configuration_status = false;
-                        try
-                        {
-                            configuration_status = setPort(port);
-                        }
-                        catch (Exception e) { }
-                        if (configuration_status)
-                        {
-                            bool conexion_status = false;
+        //            if ((port_detected == false) & (ENLAZA_listo == false))
+        //            {
+        //                bool configuration_status = false;
+        //                try
+        //                {
+        //                    configuration_status = setPort(port);
+        //                }
+        //                catch (Exception e) { }
+        //                if (configuration_status)
+        //                {
+        //                    bool conexion_status = false;
 
-                            try
-                            {
-                                conexion_status = openPort(port);
-                            }
-                            catch (Exception e) { }
+        //                    try
+        //                    {
+        //                        conexion_status = openPort(port);
+        //                    }
+        //                    catch (Exception e) { }
 
-                            if (conexion_status)
-                            {
-                                port_detected = true;
-                                IMUPort = port;
+        //                    if (conexion_status)
+        //                    {
+        //                        port_detected = true;
+        //                        IMUPort = port;
 
-                                if (serialPort.IsOpen)
-                                {
-                                    try
-                                    {
-                                        detectFrameIMU(serialPort);
-                                    }
-                                    catch (Exception e) { }
-                                    _continue = true;
-                                }
+        //                        if (serialPort.IsOpen)
+        //                        {
+        //                            try
+        //                            {
+        //                                detectFrameIMU(serialPort);
+        //                            }
+        //                            catch (Exception e) { }
+        //                            _continue = true;
+        //                        }
 
-                                if (ENLAZA_listo == false)
-                                {
-                                    try
-                                    {
-                                        serialPort.Close();
-                                    }
-                                    catch (Exception e) { }
-                                }
-                            }
-                        }
-                    }
-                }
+        //                        if (ENLAZA_listo == false)
+        //                        {
+        //                            try
+        //                            {
+        //                                serialPort.Close();
+        //                            }
+        //                            catch (Exception e) { }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
   
 
-            if (port_detected == false)
-            {
-                //label_estado.Text = "¿Está seguro que ha conectado el ENLAZA?. Por favor, asegúrese de que está encendido y presione de nuevo Conectar";
-                //System.Media.SystemSounds.Hand.Play();
-                //progressBar_connection.Value = 0;
-                //_continue = true;
-            }
-            return ENLAZA_listo;
-        }
+        //    if (port_detected == false)
+        //    {
+        //        //label_estado.Text = "¿Está seguro que ha conectado el ENLAZA?. Por favor, asegúrese de que está encendido y presione de nuevo Conectar";
+        //        //System.Media.SystemSounds.Hand.Play();
+        //        //progressBar_connection.Value = 0;
+        //        //_continue = true;
+        //    }
+        //    return ENLAZA_listo;
+        //}
 
-        public bool connectIMU(string iFeelLuckyPort, int rotation)
-        {
-            try
-            {
-                initializeSerialPort();
-            }
-            catch (Exception e) { }
+        //private bool connectIMU(string iFeelLuckyPort, int rotation)
+        //{
+        //    try
+        //    {
+        //        initializeSerialPort();
+        //    }
+        //    catch (Exception e) { }
             
-            bool iFeelLuckyConfiguration_status = false;
-            try
-            {
-                iFeelLuckyConfiguration_status = setPort(iFeelLuckyPort);
-            }
-            catch (Exception e){ }
+        //    bool iFeelLuckyConfiguration_status = false;
+        //    try
+        //    {
+        //        iFeelLuckyConfiguration_status = setPort(iFeelLuckyPort);
+        //    }
+        //    catch (Exception e){ }
 
-            if (iFeelLuckyConfiguration_status)
-            {
-                // CONEXION
-                bool iFeelLuckyconexion_status = false;
-                try
-                {
-                    iFeelLuckyconexion_status = openPort(iFeelLuckyPort);
-                }
-                catch (Exception e) { return false; }
+        //    if (iFeelLuckyConfiguration_status)
+        //    {
+        //        // CONEXION
+        //        bool iFeelLuckyconexion_status = false;
+        //        try
+        //        {
+        //            iFeelLuckyconexion_status = openPort(iFeelLuckyPort);
+        //        }
+        //        catch (Exception e) { return false; }
 
-                if (iFeelLuckyconexion_status)
-                {
-                    port_detected = true;
-                    IMUPort = iFeelLuckyPort;
+        //        if (iFeelLuckyconexion_status)
+        //        {
+        //            port_detected = true;
+        //            IMUPort = iFeelLuckyPort;
 
-                    if (serialPort.IsOpen)
-                    {
-                        try
-                        {
-                            detectFrameIMU(serialPort);                         
-                        }
-                        catch (Exception e){ }
-                        _continue = true;
-                    }
-                    if (ENLAZA_listo == false)
-                    {
-                        try
-                        {
-                            serialPort.Close();
-                        }
-                        catch (Exception e){ }
-                    }
-                }
-            }
+        //            if (serialPort.IsOpen)
+        //            {
+        //                try
+        //                {
+        //                    detectFrameIMU(serialPort);                         
+        //                }
+        //                catch (Exception e){ }
+        //                _continue = true;
+        //            }
+        //            if (ENLAZA_listo == false)
+        //            {
+        //                try
+        //                {
+        //                    serialPort.Close();
+        //                }
+        //                catch (Exception e){ }
+        //            }
+        //        }
+        //    }
 
-            if (port_detected == false)
-            {
-                string[] ports = SerialPort.GetPortNames();
-                int N = ports.Length;
+        //    if (port_detected == false)
+        //    {
+        //        string[] ports = SerialPort.GetPortNames();
+        //        int N = ports.Length;
 
-                for (int k = 0; k < N; k++)
-                {
-                    port = ports[k];
+        //        for (int k = 0; k < N; k++)
+        //        {
+        //            port = ports[k];
 
-                    if ((port_detected == false) & (ENLAZA_listo == false))
-                    {
-                        bool configuration_status = false;
-                        try
-                        {
-                            configuration_status = setPort(port);
-                        }
-                        catch (Exception e) { }
-                        if (configuration_status)
-                        {
-                            bool conexion_status = false;
+        //            if ((port_detected == false) & (ENLAZA_listo == false))
+        //            {
+        //                bool configuration_status = false;
+        //                try
+        //                {
+        //                    configuration_status = setPort(port);
+        //                }
+        //                catch (Exception e) { }
+        //                if (configuration_status)
+        //                {
+        //                    bool conexion_status = false;
 
-                            try
-                            {
-                                conexion_status = openPort(port);
-                            }
-                            catch (Exception e) { }
+        //                    try
+        //                    {
+        //                        conexion_status = openPort(port);
+        //                    }
+        //                    catch (Exception e) { }
 
-                            if (conexion_status)
-                            {
-                                port_detected = true;
-                                IMUPort = port;
+        //                    if (conexion_status)
+        //                    {
+        //                        port_detected = true;
+        //                        IMUPort = port;
 
-                                if (serialPort.IsOpen)
-                                {
-                                    try
-                                    {
-                                        detectFrameIMU(serialPort);
-                                    }
-                                    catch (Exception e) { }
-                                    _continue = true;
-                                }
+        //                        if (serialPort.IsOpen)
+        //                        {
+        //                            try
+        //                            {
+        //                                detectFrameIMU(serialPort);
+        //                            }
+        //                            catch (Exception e) { }
+        //                            _continue = true;
+        //                        }
 
-                                if (ENLAZA_listo == false)
-                                {
-                                    try
-                                    {
-                                        serialPort.Close();
-                                    }
-                                    catch (Exception e) { }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        //                        if (ENLAZA_listo == false)
+        //                        {
+        //                            try
+        //                            {
+        //                                serialPort.Close();
+        //                            }
+        //                            catch (Exception e) { }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
 
-            if (port_detected == false)
-            {
-                //label_estado.Text = "¿Está seguro que ha conectado el ENLAZA?. Por favor, asegúrese de que está encendido y presione de nuevo Conectar";
-                //System.Media.SystemSounds.Hand.Play();
-                //progressBar_connection.Value = 0;
-                //_continue = true;
-            }
-            return ENLAZA_listo;
-        }
+        //    if (port_detected == false)
+        //    {
+        //        //label_estado.Text = "¿Está seguro que ha conectado el ENLAZA?. Por favor, asegúrese de que está encendido y presione de nuevo Conectar";
+        //        //System.Media.SystemSounds.Hand.Play();
+        //        //progressBar_connection.Value = 0;
+        //        //_continue = true;
+        //    }
+        //    return ENLAZA_listo;
+        //}
 
         public void disconnectIMU()
         {
@@ -342,7 +385,7 @@ namespace IMU_gNeC
             catch (Exception e) { }
         }
 
-        public void detectFrameIMU(SerialPort _serialPort_i)
+        private void detectFrameIMU(SerialPort _serialPort_i)
         {
             while (_continue)
             {
@@ -400,38 +443,8 @@ namespace IMU_gNeC
             //    catch (Exception e) { }
             //}
         }
-
-        public bool startReadingIMU(string iFeelLuckyPort, int rotation)
-        {
-
-            this.iFeelLuckyPortSetup = iFeelLuckyPort;
-            this.rotationSetup = rotation;
-
-            try
-            {
-                workerIMU = new Thread(threadIMU);
-                workerIMU.Name = "workerA";
-            }
-            catch (Exception e) { return false; }
-
-            try
-            {
-                workerIMU.Start();
-            }
-            catch (Exception e) { return false; }
-
-            try
-            {
-                IMUAng.ImuYPR += new IMUEventHandler(rYPR.IMUrecieved);
-                ImuInitgame.InitEndGame += new InitEndGameEventHandler(InitEndGamerecieved);
-                ImuConfigPar.ImuConfig += new IMUComandEventHandler(IMUComandrecieved);
-                return true;
-            }
-            catch (Exception e) { return false; }
-            //}
-        }
-        
-        public void initializeThreadIMU()
+                
+        private void initializeThreadIMU()
         {
             try
             {
@@ -440,9 +453,8 @@ namespace IMU_gNeC
             }
             catch (Exception e) { }
         }
-
-        
-        public void threadIMU()
+                
+        private void threadIMU()
         {
             //configurar y abrir puerto
             connectIMUkownCOM(iFeelLuckyPortSetup, rotationSetup);
@@ -459,6 +471,10 @@ namespace IMU_gNeC
 
 
 
+
+
+
+
         private void initializeSerialPort()
         {
             serialPort = new SerialPort();
@@ -466,7 +482,7 @@ namespace IMU_gNeC
             serialPort.WriteTimeout = 500;
         }
 
-        public static bool setPort(string portName)
+        private static bool setPort(string portName)
         {
             int baudRate = 57600;
             Parity parity = System.IO.Ports.Parity.None;
@@ -488,7 +504,7 @@ namespace IMU_gNeC
 
         }
 
-        public static bool openPort(string portName)
+        private static bool openPort(string portName)
         {
             try
             {
@@ -1212,7 +1228,6 @@ namespace IMU_gNeC
             return YPR;
         }
        
-        #endregion
     }
 
     #region other classess
