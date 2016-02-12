@@ -26,7 +26,7 @@ namespace IMU_gNeC
         private static Single Yaw0;
         private static Single Roll0;
         private static Single Pitch0;
-        private float globalYaw, globalPitch, globalRoll;
+        public float globalYaw, globalPitch, globalRoll;
         private int or_init = 0;
         private float rom1, rom2, rom3;
         private int counter = 0;
@@ -416,6 +416,7 @@ namespace IMU_gNeC
                     {
                         serialPort.WriteLine("#om");
                         //System.Media.SystemSounds.Beep.Play();
+                        Console.WriteLine("Se ha detectado un frame del sensor inercial");
                         _continue = false;
                     }
                 }
@@ -544,8 +545,9 @@ namespace IMU_gNeC
                     try
                     {
                         message = serialPort.ReadLine();
+                        Console.WriteLine("Nuevo dato del puerto serie");
                     }
-                    catch (Exception e) { }
+                    catch (Exception e) { Console.WriteLine("error de lectura del puerto serie"); }
                     first_char = message.StartsWith("#");
                     last_char = message.EndsWith("\r");
                 }
