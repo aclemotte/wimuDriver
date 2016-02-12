@@ -416,7 +416,7 @@ namespace IMU_gNeC
                     {
                         serialPort.WriteLine("#om");
                         //System.Media.SystemSounds.Beep.Play();
-                        Console.WriteLine("Se ha detectado un frame del sensor inercial");
+                        Console.WriteLine("IMU detectado correctamente");
                         _continue = false;
                     }
                 }
@@ -535,23 +535,32 @@ namespace IMU_gNeC
 
             try
             {
-                String message = serialPort.ReadLine(); 
-                first_char = message.StartsWith("#");
-                last_char = message.EndsWith("\r");
+                String message = null;
+                //String message = serialPort.ReadLine(); 
+                //first_char = message.StartsWith("#");
+                //last_char = message.EndsWith("\r");
 
-                while (!first_char || !last_char)
+                do
                 {
-                    Thread.Sleep(10);
                     try
                     {
                         message = serialPort.ReadLine();
-                        Console.WriteLine("Nuevo dato del puerto serie");
+                        first_char = message.StartsWith("#");
+                        last_char = message.EndsWith("\r");
                     }
-                    catch (Exception e) { Console.WriteLine("error de lectura del puerto serie"); }
-                    first_char = message.StartsWith("#");
-                    last_char = message.EndsWith("\r");
-                }
+                    catch (Exception e) 
+                    { 
+                        Console.WriteLine("error de lectura del puerto serie"); 
+                        first_char = false; 
+                        last_char = false; 
+                        return; 
+                    }
 
+                    
+                } while (!first_char || !last_char);
+
+
+                //Console.WriteLine("Nuevo dato del puerto serie");
                 words = message.Split('=');
 
                 string[] words2 = words[1].Split(',');
