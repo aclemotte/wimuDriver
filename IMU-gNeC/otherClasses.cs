@@ -2,8 +2,6 @@
 
 namespace IMU_gNeC
 {
-	#region other classess
-
 	public class anglesIMU
 	{
 		public float yaw;
@@ -21,31 +19,20 @@ namespace IMU_gNeC
 		public string Z2;
 		public bool calibrationTimeStamp;
 	}
-
-	public class posIMU
+		
+	public class IMUComand
 	{
-		public int posX;
-		public int posY;
-		public bool calibrationTimeStamp;
+		public float mainAngleROMrange = 30;
+		public float secundaryAngle1ROMrange = 10;
+		public float secundaryAngle2ROMrange = 10;
+		public string mainAngleROMangle = "Y";
+		public string secundaryAngle1ROMangle = "P";
+		public string secundaryAngle2ROMangle = "R";
+		public float timePerm = 1;
+		public float thetaPerm = 5;
+
 	}
-
-	public class EnlazaControlInfo
-	{
-		public byte typeOfControl;
-		public byte kalmanOn;
-		public float kalman_b;
-		public float sampFreq;
-		public bool lateralControl;
-		public float horizontalRange;
-		public float verticalRange;
-		public float screenWidth;
-		public float screenheight;
-	}
-
-
-
-	#region eventos YPR
-
+		
 	#region clase generadora ImuYPR
 
 	public class IMUEventArgs : EventArgs
@@ -109,23 +96,8 @@ namespace IMU_gNeC
 			OnImuYPR(e);
 		}
 	}
-
-	#endregion
-
-	#region clase lectora ImuYPR
-
-	public class readImuYPR
-	{
-		public void IMUrecieved(object sender, IMUEventArgs e)
-		{
-		}
-	}
-
-	#endregion
-
+		
 	#endregion 
-
-	#region INTERPLAY: eventos Orientación 
 
 	#region clase generadora ImuOR
 
@@ -172,12 +144,8 @@ namespace IMU_gNeC
 			OnImuOR(e);
 		}
 	}
-
+		
 	#endregion
-
-	#endregion
-
-	#region INTERPLAY: eventos permanencia 
 
 	#region clase generadora ImuPerm
 
@@ -222,12 +190,8 @@ namespace IMU_gNeC
 			OnImuPerm(e);
 		}
 	}
-
+		
 	#endregion
-
-	#endregion
-
-	#region INTERPLAY: salida/vuelta del/al ROM requerido
 
 	#region clase generadora ImuROM
 
@@ -282,31 +246,8 @@ namespace IMU_gNeC
 			OnImuROM(e);
 		}
 	}
-
+		
 	#endregion
-
-	#endregion
-
-	public class IMUComand
-	{
-		public float mainAngleROMrange = 30;
-		public float secundaryAngle1ROMrange = 10;
-		public float secundaryAngle2ROMrange = 10;
-		public string mainAngleROMangle = "Y";
-		public string secundaryAngle1ROMangle = "P";
-		public string secundaryAngle2ROMangle = "R";
-		public float timePerm = 1;
-		public float thetaPerm = 5;
-
-	}
-
-
-
-
-
-
-
-	#region INTERPLAY: evento imuReady
 
 	#region clase generadora imuReady
 
@@ -351,11 +292,7 @@ namespace IMU_gNeC
 			OnImuReady(e);
 		}
 	}
-
-	#endregion
-
-	#endregion
-
+		
 	#endregion
 }
 

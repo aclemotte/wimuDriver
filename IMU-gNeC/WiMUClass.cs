@@ -46,21 +46,14 @@ namespace IMU_gNeC
 
 		float globalYaw, globalPitch, globalRoll;
 
+		IMUComand ImuConfigPar = new IMUComand();
 
 
 
-
-
-        // ImuYPR: Instantiates the event receiver.
-        //private readImuYPR rYPR = new readImuYPR();
-
-
+		       
         // ImuYPR: Instantiates the event source.
         public IMUAngle IMUAng = new IMUAngle();
-        
-        // Instantiates the event source.
-        IMUComand ImuConfigPar = new IMUComand();
-
+                
         // ImuROM: Instantiates the event source.
         public ImuROMChanged imuROM = new ImuROMChanged();
 
@@ -95,7 +88,7 @@ namespace IMU_gNeC
 		//segun doc api
 		public bool connectIMU(string iFeelLuckyPort, int rotation)
         {
-			UnitySystemConsoleRedirector.Redirect();
+			//UnitySystemConsoleRedirector.Redirect();
 
             this.iFeelLuckyPortSetup = iFeelLuckyPort;
             this.rotationSetup = rotation;
