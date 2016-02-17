@@ -66,10 +66,10 @@ namespace IMU_gNeC
 
 
 
-		// ImuPerm: Instantiates the event source.
-		public ImuPermanencia imuPerm = new ImuPermanencia();
 
 
+
+		public event seCumplePermanenciaHandler seCumplePermanencia;
 
 
 
@@ -110,6 +110,7 @@ namespace IMU_gNeC
 		//verificado
 		private void threadReadingIMU()
 		{
+			Console.WriteLine ("Thread started");
 			bool conectionOk = connectIMUkownCOM(iFeelLuckyPortSetup, rotationSetup);
 
 			if (conectionOk) 
@@ -121,9 +122,20 @@ namespace IMU_gNeC
 				{
 					readIMU();
 				}
-				if(serialPort.IsOpen)
-					serialPort.Close();
+				Console.WriteLine ("Thread finished");
+
+				Console.WriteLine ("Closing port");
+				if (serialPort.IsOpen) 
+				{
+					serialPort.Close ();
+					Console.WriteLine ("Port closed");
+				} 
+				else 
+				{
+					Console.WriteLine ("Port already closed");
+				}
 			}
+			Console.WriteLine ("Thread finished");
 		}
 
         //verificado
@@ -190,6 +202,7 @@ namespace IMU_gNeC
 				} 
 				catch (Exception e) 
 				{
+					Console.WriteLine ("Port not opened");
 					Console.WriteLine (e.ToString ());
 					return false;
 				}
@@ -707,10 +720,16 @@ namespace IMU_gNeC
                     dwell = checkDwell(ImuConfigPar.thetaPerm, ImuConfigPar.timePerm, counter, imuOR.MainAngle);
                     if (dwell)
                     {
-                        imuPerm.Alpha = globalYaw;
+                        //imuPerm.Alpha = globalYaw;
                         try
                         {
-                            imuPerm.SendPerm();
+                            //imuPerm.SendPerm();
+							if (seCumplePermanencia != null)
+							{
+								seCumplePermanenciaArg eventArg = new seCumplePermanenciaArg();
+								eventArg.Alpha = globalYaw;
+								seCumplePermanencia(eventArg);
+							}
                         }
                         catch (Exception e) { 
 							Console.WriteLine(e.ToString());

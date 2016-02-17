@@ -147,52 +147,6 @@ namespace IMU_gNeC
 		
 	#endregion
 
-	#region clase generadora ImuPerm
-
-	public class ImuPermEventArgs : EventArgs
-	{
-		public float Alpha;
-
-		public ImuPermEventArgs(float alpha)
-		{
-			this.Alpha= alpha;
-		}
-	}
-
-	public delegate void ImuPermEventHandler(object sender, ImuPermEventArgs e);
-
-	// The ImuYPR class that raises the IMU event.
-	//
-	public class ImuPermanencia
-	{
-		private float alpha = 0;
-
-		public float Alpha
-		{
-			get { return alpha; }
-			set { alpha = value; }
-		}
-
-		public event ImuPermEventHandler ImuPerm;
-
-		protected virtual void OnImuPerm(ImuPermEventArgs e)
-		{
-			if (ImuPerm != null)
-			{
-				// Invokes the delegates. 
-				ImuPerm(this, e);
-			}
-		}
-
-		public void SendPerm()
-		{
-			ImuPermEventArgs e = new ImuPermEventArgs(alpha);
-			OnImuPerm(e);
-		}
-	}
-		
-	#endregion
-
 	#region clase generadora ImuROM
 
 	public class ImuROMEventArgs : EventArgs
