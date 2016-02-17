@@ -29,12 +29,6 @@ namespace IMU_gNeC
         List<float> rot2 = new List<float>();
         List<float> rot3 = new List<float>();
 
-		float mainAngleROMrange = 30;
-		float secundaryAngle1ROMrange = 10;
-		float secundaryAngle2ROMrange = 10;
-		float timePerm = 1;
-		float thetaPerm = 5;
-
 		float angle1 = 5;
 		float angle2 = 5;
 
@@ -48,9 +42,9 @@ namespace IMU_gNeC
 		string iFeelLuckyPortSetup;
 		int rotationSetup;
 
-		bool workerImuReading;
+		bool workerImuReading;// flag to stop the thread
 
-		public float globalYaw, globalPitch, globalRoll;
+		float globalYaw, globalPitch, globalRoll;
 
 
 
@@ -65,7 +59,7 @@ namespace IMU_gNeC
         public IMUAngle IMUAng = new IMUAngle();
         
         // Instantiates the event source.
-        public IMUComand ImuConfigPar = new IMUComand();
+        IMUComand ImuConfigPar = new IMUComand();
 
         // ImuROM: Instantiates the event source.
         public ImuROMChanged imuROM = new ImuROMChanged();
@@ -101,7 +95,7 @@ namespace IMU_gNeC
 		//segun doc api
 		public bool connectIMU(string iFeelLuckyPort, int rotation)
         {
-			//UnitySystemConsoleRedirector.Redirect();
+			UnitySystemConsoleRedirector.Redirect();
 
             this.iFeelLuckyPortSetup = iFeelLuckyPort;
             this.rotationSetup = rotation;
@@ -111,24 +105,13 @@ namespace IMU_gNeC
 				workerIMU = new Thread(threadReadingIMU);
 				workerIMU.Name = "threadReadingIMU";            
                 workerIMU.Start();
+				return true;
             }
             catch (Exception e) 
 			{ 
 				Console.WriteLine(e.ToString());
 				return false; 
 			}
-
-            try
-            {
-                ImuConfigPar.ImuConfig += new IMUComandEventHandler(IMUComandrecieved);
-                return true;
-            }
-            catch (Exception e) 
-			{
-				Console.WriteLine(e.ToString());
-				return false; 
-			}
-            //}
         }
 
 		//verificado
@@ -192,9 +175,6 @@ namespace IMU_gNeC
             try
             {
 				serialPort = new SerialPort(@"\\.\" + portName, 57600, Parity.None, 8, StopBits.One);
-//				serialPort.ReadTimeout = 500;
-//				serialPort.WriteTimeout = 500;
-//				serialPort.Handshake = Handshake.None;
                 return true;
             }
             catch (Exception e)
@@ -694,25 +674,25 @@ namespace IMU_gNeC
                 IMUAng.SendAngle();
 
                 // analiza el ángulo principal
-                if (ImuConfigPar.MainAngleROMangle == "Y")
+                if (ImuConfigPar.mainAngleROMangle == "Y")
                     imuOR.MainAngle = globalYaw;
-                else if (ImuConfigPar.MainAngleROMangle == "P")
+                else if (ImuConfigPar.mainAngleROMangle == "P")
                     imuOR.MainAngle = globalPitch;
                 else
                     imuOR.MainAngle = globalRoll;
 
                 // analiza el ángulo secundario 1
-                if (ImuConfigPar.SecundaryAngle1ROMangle == "Y")
+                if (ImuConfigPar.secundaryAngle1ROMangle == "Y")
                     angle1 = globalYaw;
-                else if (ImuConfigPar.SecundaryAngle1ROMangle == "P")
+                else if (ImuConfigPar.secundaryAngle1ROMangle == "P")
                     angle1 = globalPitch;
                 else
                     angle1 = globalRoll;
 
                 // analiza el ángulo secundario 2
-                if (ImuConfigPar.SecundaryAngle2ROMangle == "Y")
+                if (ImuConfigPar.secundaryAngle2ROMangle == "Y")
                     angle2 = globalYaw;
-                else if (ImuConfigPar.SecundaryAngle2ROMangle == "P")
+                else if (ImuConfigPar.secundaryAngle2ROMangle == "P")
                     angle2 = globalPitch;
                 else
                     angle2 = globalRoll;
@@ -731,7 +711,7 @@ namespace IMU_gNeC
 					}
 
                     dwellAngle.Add(globalYaw);
-                    dwell = checkDwell(thetaPerm, timePerm, counter, imuOR.MainAngle);
+                    dwell = checkDwell(ImuConfigPar.thetaPerm, ImuConfigPar.timePerm, counter, imuOR.MainAngle);
                     if (dwell)
                     {
                         imuPerm.Alpha = globalYaw;
@@ -796,32 +776,29 @@ namespace IMU_gNeC
 			VHRgameStarted = true;
 		}
 
-
-
-
-
-
-
-
-
-
-
-
-		public void IMUComandrecieved(object sender, IMUComandEventArgs e)
+		//segun doc api
+		public void setup(IMUComand setupParameters)
 		{
-			this.mainAngleROMrange = e.MainAngleROMrange;
-			this.secundaryAngle1ROMrange = e.SecundaryAngle1ROMrange;
-			this.secundaryAngle2ROMrange = e.SecundaryAngle2ROMrange;
-			this.timePerm = e.TimePerm;
-			this.thetaPerm = e.ThetaPerm;
+			//copiarClase
+			ImuConfigPar.mainAngleROMrange = setupParameters.mainAngleROMrange;
+			ImuConfigPar.secundaryAngle1ROMrange = setupParameters.secundaryAngle1ROMrange;
+			ImuConfigPar.secundaryAngle2ROMrange = setupParameters.secundaryAngle2ROMrange;
+			ImuConfigPar.mainAngleROMangle = setupParameters.mainAngleROMangle;
+			ImuConfigPar.secundaryAngle1ROMangle = setupParameters.secundaryAngle1ROMangle;
+			ImuConfigPar.secundaryAngle2ROMangle = setupParameters.secundaryAngle2ROMangle;
+			ImuConfigPar.timePerm = setupParameters.timePerm;
+			ImuConfigPar.thetaPerm = setupParameters.thetaPerm;
+
 			VHRgameConfigured = true;
 		}
 
+		//segun doc api
 		public void calibrate()
 		{
 			Calib=true;
 		}
 
+		//segun doc api
 		public void rotate()
 		{
 			Rot++;
@@ -858,7 +835,7 @@ namespace IMU_gNeC
         {
             bool ok;
 
-            if ((secundaryAngle1ROMrange > Math.Abs(angle1)) && (secundaryAngle2ROMrange > Math.Abs(angle2)))// && (2 * mainAngleROMrange > Math.Abs(mainAngle)))
+			if ((ImuConfigPar.secundaryAngle1ROMrange > Math.Abs(angle1)) && (ImuConfigPar.secundaryAngle2ROMrange > Math.Abs(angle2)))// && (2 * mainAngleROMrange > Math.Abs(mainAngle)))
             {
                 ok = true;
                 if (!VHRgameInRange)
@@ -930,7 +907,7 @@ namespace IMU_gNeC
 
             if (std_intention_theta < anglePerm)
             {
-                if (mainAngleROMrange > Math.Abs(mainAngle))
+				if (ImuConfigPar.mainAngleROMrange > Math.Abs(mainAngle))
                     clic_flag = true;
                 dwellAngle.Clear();
             }

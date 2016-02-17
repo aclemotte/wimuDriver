@@ -287,127 +287,19 @@ namespace IMU_gNeC
 
 	#endregion
 
-
-	#region INTERPLAY: parámetros configuracion
-
-	#region clase generadora parámetros configuracion
-
-	public class IMUComandEventArgs : EventArgs
-	{
-		private readonly float mainAngleROMrange = 30;
-		private readonly float secundaryAngle1ROMrange = 10;
-		private readonly float secundaryAngle2ROMrange = 10;
-		private readonly string mainAngleROMangle = "Y";
-		private readonly string secundaryAngle1ROMangle = "P";
-		private readonly string secundaryAngle2ROMangle = "R";
-		private readonly float timePerm = 1;
-		private readonly float thetaPerm = 5;
-
-		// Constructor.
-		public IMUComandEventArgs(
-			float mainAngleROMrange, float secundaryAngle1ROMrange, float secundaryAngle2ROMrange,
-			string mainAngleROMangle, string secundaryAngle1ROMangle, string secundaryAngle2ROMangle, 
-			float timePerm, float thetaPerm)
-		{
-			this.mainAngleROMrange = mainAngleROMrange;
-			this.secundaryAngle1ROMrange = secundaryAngle1ROMrange;
-			this.secundaryAngle1ROMrange = secundaryAngle2ROMrange;
-			this.mainAngleROMangle = mainAngleROMangle;
-			this.secundaryAngle1ROMangle = secundaryAngle1ROMangle;
-			this.secundaryAngle1ROMangle = secundaryAngle2ROMangle; 
-			this.timePerm = timePerm;
-			this.thetaPerm = thetaPerm;
-		}
-
-		//Properties.
-		public float MainAngleROMrange { get { return mainAngleROMrange; } }
-		public float SecundaryAngle1ROMrange { get { return secundaryAngle1ROMrange; } }
-		public float SecundaryAngle2ROMrange { get { return secundaryAngle2ROMrange; } }
-		public string MainAngleROMangle { get { return mainAngleROMangle; } }
-		public string SecundaryAngle1ROMangle { get { return secundaryAngle1ROMangle; } }
-		public string SecundaryAngle2ROMangle { get { return secundaryAngle2ROMangle; } }
-		public float TimePerm { get { return timePerm; } }
-		public float ThetaPerm { get { return thetaPerm; } }
-	}
-
-	public delegate void IMUComandEventHandler(object sender, IMUComandEventArgs e);
-
-	// The ImuYPR class that raises the IMU event.
-	//
 	public class IMUComand
 	{
-		private float mainAngleROMrange = 30;
-		private float secundaryAngle1ROMrange = 10;
-		private float secundaryAngle2ROMrange = 10;
-		private string mainAngleROMangle = "Y";
-		private string secundaryAngle1ROMangle = "P";
-		private string secundaryAngle2ROMangle = "R";
-		private float timePerm = 1;
-		private float thetaPerm = 5;
+		public float mainAngleROMrange = 30;
+		public float secundaryAngle1ROMrange = 10;
+		public float secundaryAngle2ROMrange = 10;
+		public string mainAngleROMangle = "Y";
+		public string secundaryAngle1ROMangle = "P";
+		public string secundaryAngle2ROMangle = "R";
+		public float timePerm = 1;
+		public float thetaPerm = 5;
 
-
-		public float MainAngleROMrange
-		{
-			get { return mainAngleROMrange; }
-			set { mainAngleROMrange = value; }
-		}
-		public float SecundaryAngle1ROMrange
-		{
-			get { return secundaryAngle1ROMrange; }
-			set { secundaryAngle1ROMrange = value; }
-		}
-		public float SecundaryAngle2ROMrange
-		{
-			get { return secundaryAngle2ROMrange; }
-			set { secundaryAngle2ROMrange = value; }
-		}
-		public string MainAngleROMangle
-		{
-			get { return mainAngleROMangle; }
-			set { mainAngleROMangle = value; }
-		}
-		public string SecundaryAngle1ROMangle
-		{
-			get { return secundaryAngle1ROMangle; }
-			set { secundaryAngle1ROMangle = value; }
-		}
-		public string SecundaryAngle2ROMangle
-		{
-			get { return secundaryAngle2ROMangle; }
-			set { secundaryAngle2ROMangle = value; }
-		}
-		public float TimePerm
-		{
-			get { return timePerm; }
-			set { timePerm = value; }
-		}
-		public float ThetaPerm
-		{
-			get { return thetaPerm; }
-			set { thetaPerm = value; }
-		}
-		public event IMUComandEventHandler ImuConfig;
-
-		protected virtual void OnImuComand(IMUComandEventArgs e)
-		{
-			if (ImuConfig != null)
-			{
-				// Invokes the delegates. 
-				ImuConfig(this, e);
-			}
-		}
-
-		public void SendSetUp()
-		{
-			IMUComandEventArgs e = new IMUComandEventArgs(mainAngleROMrange, secundaryAngle1ROMrange, secundaryAngle2ROMrange,
-				mainAngleROMangle, secundaryAngle1ROMangle, secundaryAngle2ROMangle,
-				timePerm, thetaPerm);
-			OnImuComand(e);
-		}
 	}
-	#endregion
 
-	#endregion
 
 
 
