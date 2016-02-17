@@ -33,6 +33,17 @@ namespace IMU_gNeC
 
 	}
 		
+
+
+
+
+
+
+
+
+
+
+
 	#region clase generadora ImuYPR
 
 	public class IMUEventArgs : EventArgs
@@ -99,6 +110,13 @@ namespace IMU_gNeC
 		
 	#endregion 
 
+
+
+
+
+
+
+
 	#region clase generadora ImuOR
 
 	public class ImuOREventArgs : EventArgs
@@ -147,106 +165,15 @@ namespace IMU_gNeC
 		
 	#endregion
 
-	#region clase generadora ImuROM
 
-	public class ImuROMEventArgs : EventArgs
-	{
-		private readonly float mainAngle = 0;
-		private readonly bool romOK = false;
-		// Constructor.
-		public ImuROMEventArgs(float mainAngle, bool romOK)
-		{
-			this.mainAngle = mainAngle;
-			this.romOK = romOK;
-		}
-		//Properties.
-		public float MainAnglea { get { return mainAngle; } }
-		public bool RomOK { get { return romOK; } }
-	}
 
-	public delegate void ImuROMEventHandler(object sender, ImuROMEventArgs e);
 
-	public class ImuROMChanged
-	{
-		private float mainAngle = 0;
-		private bool romOK = false;
 
-		public float MainAngle
-		{
-			get { return mainAngle; }
-			set { mainAngle = value; }
-		}
 
-		public bool RomOK
-		{
-			get { return romOK; }
-			set { romOK = value; }
-		}
 
-		public event ImuROMEventHandler ImuROM;
 
-		protected virtual void OnImuROM(ImuROMEventArgs e)
-		{
-			if (ImuROM != null)
-			{
-				// Invokes the delegates. 
-				ImuROM(this, e);
-			}
-		}
 
-		public void SendROM()
-		{
-			ImuROMEventArgs e = new ImuROMEventArgs(mainAngle, romOK);
-			OnImuROM(e);
-		}
-	}
-		
-	#endregion
 
-	#region clase generadora imuReady
 
-	public class ImuReadyEventArgs : EventArgs
-	{
-		private readonly float alpha = 0;
-		// Constructor.
-		public ImuReadyEventArgs(float alpha)
-		{
-			this.alpha = alpha;
-		}
-		//Properties.
-		public float Alpha { get { return alpha; } }
-	}
-
-	public delegate void ImuReadyEventHandler(object sender, ImuReadyEventArgs e);
-
-	public class ImuReady
-	{
-		private float alpha = 0;
-
-		public float Alpha
-		{
-			get { return alpha; }
-			set { alpha = value; }
-		}
-
-		public event ImuReadyEventHandler ImuRea;
-
-		protected virtual void OnImuReady(ImuReadyEventArgs e)
-		{
-			if (ImuRea != null)
-			{
-				// Invokes the delegates. 
-				ImuRea(this, e);
-			}
-		}
-
-		public void SendReady()
-		{
-			ImuReadyEventArgs e = new ImuReadyEventArgs(alpha);
-			OnImuReady(e);
-		}
-	}
-		
-	#endregion
 }
 

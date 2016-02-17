@@ -51,25 +51,27 @@ namespace IMU_gNeC
 
 
 		       
+
+
+
+
         // ImuYPR: Instantiates the event source.
         public IMUAngle IMUAng = new IMUAngle();
                 
-        // ImuROM: Instantiates the event source.
-        public ImuROMChanged imuROM = new ImuROMChanged();
 
         // ImuOR: Instantiates the event source.
         public ImuOrientation imuOR = new ImuOrientation();
 
-        public ImuReady imuReady = new ImuReady();
 
 
 
 
 
 
-
-
+		public event EventHandler haVueltoAlRango;
+		public event EventHandler fueraDeRango;
 		public event seCumplePermanenciaHandler seCumplePermanencia;
+		public event EventHandler imuListo;
 
 
 
@@ -115,6 +117,11 @@ namespace IMU_gNeC
 
 			if (conectionOk) 
 			{
+				if (imuListo != null)
+				{
+					imuListo(this, EventArgs.Empty);
+				}
+
 				workerImuReading = true;
 				//while (workerIMU.IsAlive) {
 				//workerImuReading se cambia a false mediante el metodo publico
@@ -196,6 +203,7 @@ namespace IMU_gNeC
 			{
 				try 
 				{
+					Console.WriteLine ("Opening port");
 					serialPort.Open ();
 					Console.WriteLine ("Port opened");
 					return true; // Success
@@ -852,9 +860,11 @@ namespace IMU_gNeC
                 ok = true;
                 if (!VHRgameInRange)
                 {
-                    imuROM.MainAngle = mainAngle;
-                    imuROM.RomOK = ok;
-                    imuROM.SendROM();
+					if (haVueltoAlRango != null)
+					{
+						haVueltoAlRango(this, EventArgs.Empty);
+					}
+
                 }
             }
             else
@@ -862,9 +872,10 @@ namespace IMU_gNeC
                 ok = false;
                 if (VHRgameInRange)
                 {
-                    imuROM.MainAngle = mainAngle;
-                    imuROM.RomOK = ok;
-                    imuROM.SendROM();
+					if (fueraDeRango != null)
+					{
+						fueraDeRango(this, EventArgs.Empty);
+					}
                 }
             }         
             return ok;
