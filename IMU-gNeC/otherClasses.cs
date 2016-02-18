@@ -2,7 +2,7 @@
 
 namespace IMU_gNeC
 {
-	public class anglesIMU
+	public class dataIMU
 	{
 		public float yaw;
 		public float pitch;
@@ -20,7 +20,7 @@ namespace IMU_gNeC
 		public bool calibrationTimeStamp;
 	}
 		
-	public class IMUComand
+	public class setupParameters
 	{
 		public float mainAngleROMrange = 30;
 		public float secundaryAngle1ROMrange = 10;

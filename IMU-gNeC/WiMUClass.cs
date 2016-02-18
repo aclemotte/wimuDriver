@@ -13,8 +13,8 @@ namespace IMU_gNeC
         static SerialPort serialPort;
         Thread workerIMU;
 
-        List<anglesIMU> IMU = new List<anglesIMU>();
-        anglesIMU imuAux = new anglesIMU();
+		List<dataIMU> IMU = new List<dataIMU>();
+		dataIMU imuAux = new dataIMU();
         Matrix RCAL = new Matrix(new double[,] { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } });
         static Single Yaw0;
         static Single Roll0;
@@ -44,18 +44,8 @@ namespace IMU_gNeC
 
 		bool workerImuReading;// flag to stop the thread
 		float globalYaw, globalPitch, globalRoll;
-		IMUComand ImuConfigPar = new IMUComand();
+		setupParameters ImuConfigPar = new setupParameters();
 		orientacionIMUYPRArg orientacionIMUYPR; 
-
-		       
-
-
-
-	                
-
-
-
-
 
 
 
@@ -78,8 +68,6 @@ namespace IMU_gNeC
 
 
 
-		//verificado
-		//segun doc api
 		public bool connectIMU(string iFeelLuckyPort, int rotation)
         {
 			//UnitySystemConsoleRedirector.Redirect();
@@ -101,8 +89,7 @@ namespace IMU_gNeC
 			}
         }
 
-		//verificado
-		private void threadReadingIMU()
+		void threadReadingIMU()
 		{
 			Console.WriteLine ("Thread started");
 			bool conectionOk = connectIMUkownCOM(iFeelLuckyPortSetup, rotationSetup);
@@ -137,8 +124,7 @@ namespace IMU_gNeC
 			Console.WriteLine ("Thread finished");
 		}
 
-        //verificado
-        private bool connectIMUkownCOM(string iFeelLuckyPort, int rotation)
+        bool connectIMUkownCOM(string iFeelLuckyPort, int rotation)
         {
 			bool setPortOk = setPort(iFeelLuckyPort);
 
@@ -162,19 +148,14 @@ namespace IMU_gNeC
 			}
         }      			
                 
-                
 
 
 
 
+		//serial port methods
 
 
-
-
-
-
-		//verificado
-        private bool setPort(string portName)
+        bool setPort(string portName)
         {
             try
             {
@@ -188,8 +169,7 @@ namespace IMU_gNeC
             }
         }
 
-		//verificado
-        private bool openPort(string portName)
+        bool openPort(string portName)
         {
 			if (!serialPort.IsOpen) 
 			{
@@ -222,7 +202,7 @@ namespace IMU_gNeC
 
 
 
-        private void readIMU()
+        void readIMU()
         {
             #region recibe datos del IMU
 
@@ -260,7 +240,7 @@ namespace IMU_gNeC
                 Single yaw = 0, roll = 0, pitch = 0;
 
                 double X0, X1, X2, Y0, Y1, Y2, Z0, Z1, Z2;
-                anglesIMU imuAuxA = new anglesIMU();
+				dataIMU imuAuxA = new dataIMU();
                 X0 = 0; X1 = 0; X2 = 0; Y0 = 0; Y1 = 0; Y2 = 0; Z0 = 0; Z1 = 0; Z2 = 0;
 
                 if (words[0] == "#DCM")
@@ -290,7 +270,7 @@ namespace IMU_gNeC
                     RCAL = new Matrix(new double[,] { { X0, X1, X2 }, { Y0, Y1, Y2 }, { Z0, Z1, Z2 } });
 
                     // Calcular el máximo Z0, Z1 y Z2
-                    or_init = maximo(Z0, Z1, Z2);
+                    or_init = functions.maximo(Z0, Z1, Z2);
 
                     if (or_init == 1)
                     {
@@ -323,7 +303,7 @@ namespace IMU_gNeC
                     RT_A[3, 1].Re = 1;
                 angle[2] = Convert.ToSingle(-Math.Asin(RT_A[3, 1].Re)); // PITCH
 
-                YPR = calculate_YPR(or_init, angle[0], angle[1], angle[2]);
+                YPR = functions.calculate_YPR(or_init, angle[0], angle[1], angle[2]);
                 //YPR[2] = Convert.ToSingle(gravity); // Esto es un apaño para la silla de ruedas
 
                 yaw = YPR[0];
@@ -345,7 +325,7 @@ namespace IMU_gNeC
                         rom1 = rot1[0] + rot1[rot1.Count - 1];
                         rom2 = rot2[0] + rot2[rot2.Count - 1];
                         rom3 = rot3[0] + rot3[rot3.Count - 1];
-                        rotation = maximo(rom1, rom2, rom3);
+                        rotation = functions.maximo(rom1, rom2, rom3);
 
                         Rot = 0;
                         rot1.Clear();
@@ -801,17 +781,17 @@ namespace IMU_gNeC
 		}
 
 		//segun doc api
-		public void setup(IMUComand setupParameters)
+		public void setup(setupParameters setupParametersArg)
 		{
 			//copiarClase
-			ImuConfigPar.mainAngleROMrange = setupParameters.mainAngleROMrange;
-			ImuConfigPar.secundaryAngle1ROMrange = setupParameters.secundaryAngle1ROMrange;
-			ImuConfigPar.secundaryAngle2ROMrange = setupParameters.secundaryAngle2ROMrange;
-			ImuConfigPar.mainAngleROMangle = setupParameters.mainAngleROMangle;
-			ImuConfigPar.secundaryAngle1ROMangle = setupParameters.secundaryAngle1ROMangle;
-			ImuConfigPar.secundaryAngle2ROMangle = setupParameters.secundaryAngle2ROMangle;
-			ImuConfigPar.timePerm = setupParameters.timePerm;
-			ImuConfigPar.thetaPerm = setupParameters.thetaPerm;
+			ImuConfigPar.mainAngleROMrange = setupParametersArg.mainAngleROMrange;
+			ImuConfigPar.secundaryAngle1ROMrange = setupParametersArg.secundaryAngle1ROMrange;
+			ImuConfigPar.secundaryAngle2ROMrange = setupParametersArg.secundaryAngle2ROMrange;
+			ImuConfigPar.mainAngleROMangle = setupParametersArg.mainAngleROMangle;
+			ImuConfigPar.secundaryAngle1ROMangle = setupParametersArg.secundaryAngle1ROMangle;
+			ImuConfigPar.secundaryAngle2ROMangle = setupParametersArg.secundaryAngle2ROMangle;
+			ImuConfigPar.timePerm = setupParametersArg.timePerm;
+			ImuConfigPar.thetaPerm = setupParametersArg.thetaPerm;
 
 			VHRgameConfigured = true;
 		}
@@ -855,7 +835,7 @@ namespace IMU_gNeC
 
 
 
-        public bool checkROM(float angle1, float angle2, float mainAngle)
+        bool checkROM(float angle1, float angle2, float mainAngle)
         {
             bool ok;
 
@@ -885,7 +865,7 @@ namespace IMU_gNeC
             return ok;
         }
         
-        public bool checkDwell(float anglePerm, float time, int counter, float mainAngle)
+        bool checkDwell(float anglePerm, float time, int counter, float mainAngle)
         {
             bool clic;
             int t_permanencia = (int)(time * 50); // T_permanencia en samples
@@ -906,7 +886,7 @@ namespace IMU_gNeC
             return clic;
         }
 
-        public bool check_click_intention(int t_permanencia, float anglePerm, float mainAngle)
+        bool check_click_intention(int t_permanencia, float anglePerm, float mainAngle)
         {
             float std_intention_theta;
             bool clic_flag = false;
@@ -943,90 +923,7 @@ namespace IMU_gNeC
                 clic_flag = false;
             }
             return clic_flag;
-        }
-        
-        public int maximo(double a, double b, double c)
-        {
-
-            a = Math.Abs(a);
-            b = Math.Abs(b);
-            c = Math.Abs(c);
-
-            if (a > b)
-            {
-                if (a > c)
-                    return 1;
-                else
-                    return 3;
-            }
-            else
-            {
-                if (b > c)
-                    return 2;
-                else
-                    return 3;
-            }
-        }
-
-        public Single[] calculate_YPR(int or_init, Single alfa, Single beta, Single gamma)
-        {
-
-            Single[] YPR = { 0, 0, 0 };
-
-            alfa = alfa * Convert.ToSingle(180 / Math.PI);
-            beta = beta * Convert.ToSingle(180 / Math.PI);
-            gamma = gamma * Convert.ToSingle(180 / Math.PI);
-
-            switch (or_init)
-            {
-                case 1:
-                    YPR[0] = beta; // YAW
-                    YPR[1] = gamma; // PITCH
-                    YPR[2] = alfa;  // ROLL
-
-                    break;
-                case 2:
-                    YPR[0] = -beta; // YAW
-                    YPR[1] = -gamma; // PITCH
-                    YPR[2] = alfa;  // ROLL
-
-                    break;
-                case 3:
-                    YPR[0] = gamma; // YAW
-                    YPR[1] = beta; // PITCH
-                    YPR[2] = alfa;  // ROLL
-
-
-                    break;
-                case 4:
-                    YPR[0] = -gamma; // YAW
-                    YPR[1] = -beta; // PITCH
-                    YPR[2] = alfa;  // ROLL
-
-
-
-                    break;
-                case 5:
-                    YPR[0] = alfa; // YAW
-                    YPR[1] = beta; // PITCH
-                    YPR[2] = gamma;  // ROLL
-
-
-
-
-                    break;
-                case 6:
-                    YPR[0] = -alfa; // YAW
-                    YPR[1] = -beta; // PITCH
-                    YPR[2] = -gamma;  // ROLL
-
-
-                    break;
-            }
-
-            return YPR;
-        }
-       
+        }       
     }
 
 }
