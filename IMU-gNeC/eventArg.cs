@@ -15,5 +15,13 @@ namespace IMU_gNeC
 	{
 		public float mainAngle = 0;
 	}
+
+	public delegate void orientacionIMUYPRHandler(orientacionIMUYPRArg e);
+	public class orientacionIMUYPRArg: EventArgs
+	{
+		public float yaw = 0;
+		public float pitch = 0;
+		public float roll = 0;
+	}
 }
 

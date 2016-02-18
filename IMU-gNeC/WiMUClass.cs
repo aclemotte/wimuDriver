@@ -43,21 +43,15 @@ namespace IMU_gNeC
 		int rotationSetup;
 
 		bool workerImuReading;// flag to stop the thread
-
 		float globalYaw, globalPitch, globalRoll;
-
 		IMUComand ImuConfigPar = new IMUComand();
-
-
+		orientacionIMUYPRArg orientacionIMUYPR; 
 
 		       
 
 
 
-
-        // ImuYPR: Instantiates the event source.
-        public IMUAngle IMUAng = new IMUAngle();
-                
+	                
 
 
 
@@ -65,7 +59,7 @@ namespace IMU_gNeC
 
 
 
-
+		public event orientacionIMUYPRHandler orientacionIMUYPRFired;
 		public event EventHandler haVueltoAlRangoFired;
 		public event EventHandler fueraDeRangoFired;
 		public event seCumplePermanenciaHandler seCumplePermanenciaFired;
@@ -680,10 +674,16 @@ namespace IMU_gNeC
 
                 counter++;
 
-                IMUAng.Yaw = globalYaw;
-                IMUAng.Pitch = globalPitch;
-                IMUAng.Roll = globalRoll;
-                IMUAng.SendAngle();
+
+				orientacionIMUYPR = new orientacionIMUYPRArg();
+				orientacionIMUYPR.yaw = globalYaw;
+				orientacionIMUYPR.roll = globalRoll;
+				orientacionIMUYPR.pitch = globalPitch;
+
+				if(orientacionIMUYPRFired != null)
+				{
+					orientacionIMUYPRFired(orientacionIMUYPR);
+				}
 
 				orientacionIMUArg imuOrientacion = new orientacionIMUArg();
 
