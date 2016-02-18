@@ -59,8 +59,6 @@ namespace IMU_gNeC
         public IMUAngle IMUAng = new IMUAngle();
                 
 
-        // ImuOR: Instantiates the event source.
-        public ImuOrientation imuOR = new ImuOrientation();
 
 
 
@@ -68,11 +66,11 @@ namespace IMU_gNeC
 
 
 
-		public event EventHandler haVueltoAlRango;
-		public event EventHandler fueraDeRango;
-		public event seCumplePermanenciaHandler seCumplePermanencia;
-		public event EventHandler imuListo;
-
+		public event EventHandler haVueltoAlRangoFired;
+		public event EventHandler fueraDeRangoFired;
+		public event seCumplePermanenciaHandler seCumplePermanenciaFired;
+		public event EventHandler imuListoFired;
+		public event orientaciónIMUArgHandler orientacionIMUFired;
 
 
 
@@ -117,9 +115,9 @@ namespace IMU_gNeC
 
 			if (conectionOk) 
 			{
-				if (imuListo != null)
+				if (imuListoFired != null)
 				{
-					imuListo(this, EventArgs.Empty);
+					imuListoFired(this, EventArgs.Empty);
 				}
 
 				workerImuReading = true;
@@ -687,13 +685,15 @@ namespace IMU_gNeC
                 IMUAng.Roll = globalRoll;
                 IMUAng.SendAngle();
 
+				orientacionIMUArg imuOrientacion = new orientacionIMUArg();
+
                 // analiza el ángulo principal
                 if (ImuConfigPar.mainAngleROMangle == "Y")
-                    imuOR.MainAngle = globalYaw;
+					imuOrientacion.mainAngle = globalYaw; //imuOR.MainAngle = globalYaw;
                 else if (ImuConfigPar.mainAngleROMangle == "P")
-                    imuOR.MainAngle = globalPitch;
+					imuOrientacion.mainAngle = globalPitch; //imuOR.MainAngle = globalPitch;
                 else
-                    imuOR.MainAngle = globalRoll;
+					imuOrientacion.mainAngle = globalRoll; //imuOR.MainAngle = globalRoll;
 
                 // analiza el ángulo secundario 1
                 if (ImuConfigPar.secundaryAngle1ROMangle == "Y")
@@ -711,32 +711,36 @@ namespace IMU_gNeC
                 else
                     angle2 = globalRoll;
 
-                VHRgameInRange = checkROM(angle1, angle2, imuOR.MainAngle);
+				VHRgameInRange = checkROM(angle1, angle2, imuOrientacion.mainAngle); //imuOR.MainAngle);
              
                 if ((VHRgameStarted) && (VHRgameConfigured) && (VHRgameInRange))
                 {
                     // envía el ángulo principal   
                     try
                     {
-                        imuOR.SendAngle();
+                        //imuOR.SendAngle()
+						if (orientacionIMUFired != null)
+						{
+							orientacionIMUFired(imuOrientacion);
+						}
                     }
                     catch (Exception e) { 
 						Console.WriteLine(e.ToString());
 					}
 
                     dwellAngle.Add(globalYaw);
-                    dwell = checkDwell(ImuConfigPar.thetaPerm, ImuConfigPar.timePerm, counter, imuOR.MainAngle);
+					dwell = checkDwell(ImuConfigPar.thetaPerm, ImuConfigPar.timePerm, counter, imuOrientacion.mainAngle); //imuOR.MainAngle);
                     if (dwell)
                     {
                         //imuPerm.Alpha = globalYaw;
                         try
                         {
                             //imuPerm.SendPerm();
-							if (seCumplePermanencia != null)
+							if (seCumplePermanenciaFired != null)
 							{
 								seCumplePermanenciaArg eventArg = new seCumplePermanenciaArg();
 								eventArg.Alpha = globalYaw;
-								seCumplePermanencia(eventArg);
+								seCumplePermanenciaFired(eventArg);
 							}
                         }
                         catch (Exception e) { 
@@ -860,9 +864,9 @@ namespace IMU_gNeC
                 ok = true;
                 if (!VHRgameInRange)
                 {
-					if (haVueltoAlRango != null)
+					if (haVueltoAlRangoFired != null)
 					{
-						haVueltoAlRango(this, EventArgs.Empty);
+						haVueltoAlRangoFired(this, EventArgs.Empty);
 					}
 
                 }
@@ -872,9 +876,9 @@ namespace IMU_gNeC
                 ok = false;
                 if (VHRgameInRange)
                 {
-					if (fueraDeRango != null)
+					if (fueraDeRangoFired != null)
 					{
-						fueraDeRango(this, EventArgs.Empty);
+						fueraDeRangoFired(this, EventArgs.Empty);
 					}
                 }
             }         

@@ -32,10 +32,6 @@ namespace IMU_gNeC
 		public float thetaPerm = 5;
 
 	}
-		
-
-
-
 
 
 
@@ -107,67 +103,8 @@ namespace IMU_gNeC
 			OnImuYPR(e);
 		}
 	}
-		
+
 	#endregion 
-
-
-
-
-
-
-
-
-	#region clase generadora ImuOR
-
-	public class ImuOREventArgs : EventArgs
-	{
-		private readonly float mainAngle = 0;
-		// Constructor.
-		public ImuOREventArgs(float mainAngle)
-		{
-			this.mainAngle = mainAngle;
-		}
-		//Properties.
-		public float MainAngle { get { return mainAngle; } }
-	}
-
-	public delegate void ImuOREventHandler(object sender, ImuOREventArgs e);
-
-	// The ImuYPR class that raises the IMU event.
-	//
-	public class ImuOrientation
-	{
-		private float mainAngle = 0;
-
-		public float MainAngle
-		{
-			get { return mainAngle; }
-			set { mainAngle = value; }
-		}
-
-		public event ImuOREventHandler ImuOR;
-
-		protected virtual void OnImuOR(ImuOREventArgs e)
-		{
-			if (ImuOR != null)
-			{
-				// Invokes the delegates. 
-				ImuOR(this, e);
-			}
-		}
-
-		public void SendAngle()
-		{
-			ImuOREventArgs e = new ImuOREventArgs(mainAngle);
-			OnImuOR(e);
-		}
-	}
-		
-	#endregion
-
-
-
-
 
 
 
