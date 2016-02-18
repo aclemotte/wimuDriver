@@ -46,7 +46,7 @@ namespace IMU_gNeC
 		float globalYaw, globalPitch, globalRoll;
 		setupParameters ImuConfigPar = new setupParameters();
 		orientacionIMUYPRArg orientacionIMUYPR; 
-
+		seCumplePermanenciaArg seCumplePermanencia = new seCumplePermanenciaArg();
 
 
 		public event orientacionIMUYPRHandler orientacionIMUYPRFired;
@@ -669,11 +669,26 @@ namespace IMU_gNeC
 
                 // analiza el ángulo principal
                 if (ImuConfigPar.mainAngleROMangle == "Y")
-					imuOrientacion.mainAngle = globalYaw; //imuOR.MainAngle = globalYaw;
+				{
+					imuOrientacion.mainAngle = globalYaw;
+					seCumplePermanencia.Alpha = globalYaw;
+				}
                 else if (ImuConfigPar.mainAngleROMangle == "P")
-					imuOrientacion.mainAngle = globalPitch; //imuOR.MainAngle = globalPitch;
-                else
-					imuOrientacion.mainAngle = globalRoll; //imuOR.MainAngle = globalRoll;
+				{
+					imuOrientacion.mainAngle = globalPitch;
+					seCumplePermanencia.Alpha = globalPitch;
+				}
+				else if(ImuConfigPar.mainAngleROMangle == "R")
+				{
+					imuOrientacion.mainAngle = globalRoll;
+					seCumplePermanencia.Alpha = globalRoll;
+				}
+				else
+				{
+					Console.WriteLine("ImuConfigPar.mainAngleROMangle: -" + ImuConfigPar.mainAngleROMangle + "- unknow");
+					//fire an error
+					return;
+				}
 
                 // analiza el ángulo secundario 1
                 if (ImuConfigPar.secundaryAngle1ROMangle == "Y")
@@ -690,43 +705,44 @@ namespace IMU_gNeC
                     angle2 = globalPitch;
                 else
                     angle2 = globalRoll;
-
-				VHRgameInRange = checkROM(angle1, angle2, imuOrientacion.mainAngle); //imuOR.MainAngle);
              
-                if ((VHRgameStarted) && (VHRgameConfigured) && (VHRgameInRange))
+                if ((VHRgameStarted) && (VHRgameConfigured))
                 {
-                    // envía el ángulo principal   
-                    try
-                    {
-                        //imuOR.SendAngle()
-						if (orientacionIMUFired != null)
-						{
-							orientacionIMUFired(imuOrientacion);
-						}
-                    }
-                    catch (Exception e) { 
-						Console.WriteLine(e.ToString());
-					}
-
-                    dwellAngle.Add(globalYaw);
-					dwell = checkDwell(ImuConfigPar.thetaPerm, ImuConfigPar.timePerm, counter, imuOrientacion.mainAngle); //imuOR.MainAngle);
-                    if (dwell)
-                    {
-                        //imuPerm.Alpha = globalYaw;
-                        try
-                        {
-                            //imuPerm.SendPerm();
-							if (seCumplePermanenciaFired != null)
+					VHRgameInRange = checkROM(angle1, angle2, imuOrientacion.mainAngle);
+					if (VHRgameInRange)
+					{							
+	                    // envía el ángulo principal   
+	                    try
+	                    {
+	                        //imuOR.SendAngle()
+							if (orientacionIMUFired != null)
 							{
-								seCumplePermanenciaArg eventArg = new seCumplePermanenciaArg();
-								eventArg.Alpha = globalYaw;
-								seCumplePermanenciaFired(eventArg);
+								orientacionIMUFired(imuOrientacion);
 							}
-                        }
-                        catch (Exception e) { 
+	                    }
+	                    catch (Exception e) { 
 							Console.WriteLine(e.ToString());
 						}
-                    }
+
+	                    dwellAngle.Add(globalYaw);
+						dwell = checkDwell(ImuConfigPar.thetaPerm, ImuConfigPar.timePerm, counter, imuOrientacion.mainAngle);
+	                    if (dwell)
+	                    {
+	                        //imuPerm.Alpha = globalYaw;
+	                        try
+	                        {
+	                            //imuPerm.SendPerm();
+								if (seCumplePermanenciaFired != null)
+								{								
+									seCumplePermanencia.Alpha = globalYaw;
+									seCumplePermanenciaFired(seCumplePermanencia);
+								}
+	                        }
+	                        catch (Exception e) { 
+								Console.WriteLine(e.ToString());
+							}
+	                    }
+					}
                 }
             }
             catch (Exception e) { 
