@@ -30,6 +30,9 @@ namespace IMU_gNeC
 		public string secundaryAngle2ROMangle = "R";
 		public float timePerm = 1;
 		public float thetaPerm = 5;
+        public int or_init = 4;
+        public int rotation = 2;
+        public int rom = 1;
 
 	}
 }

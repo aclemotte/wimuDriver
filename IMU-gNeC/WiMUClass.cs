@@ -20,7 +20,7 @@ namespace IMU_gNeC
         static Single Roll0;
         static Single Pitch0;
         int or_init = 0;
-        float rom1, rom2, rom3;
+        float rom, rom1, rom2, rom3;
         int counter = 0;
         int rotation;
         bool Calib = true;
@@ -312,28 +312,28 @@ namespace IMU_gNeC
 
             #endregion
 
-                #region detecta nuevo eje sagital de rotacion
+                //#region detecta nuevo eje sagital de rotacion
 
-                if ((Rot > 0) && (Rot < 2))
-                {
-                    rot1.Add(yaw);
-                    rot2.Add(pitch);
-                    rot3.Add(roll);
+                //if ((Rot > 0) && (Rot < 2))
+                //{
+                //    rot1.Add(yaw);
+                //    rot2.Add(pitch);
+                //    rot3.Add(roll);
 
-                    if (Rot == 1)
-                    {
-                        rom1 = rot1[0] + rot1[rot1.Count - 1];
-                        rom2 = rot2[0] + rot2[rot2.Count - 1];
-                        rom3 = rot3[0] + rot3[rot3.Count - 1];
-                        rotation = functions.maximo(rom1, rom2, rom3);
+                //    if (Rot == 1)
+                //    {
+                //        rom1 = rot1[0] + rot1[rot1.Count - 1];
+                //        rom2 = rot2[0] + rot2[rot2.Count - 1];
+                //        rom3 = rot3[0] + rot3[rot3.Count - 1];
+                //        rotation = functions.maximo(rom1, rom2, rom3);
 
-                        Rot = 0;
-                        rot1.Clear();
-                        rot2.Clear();
-                        rot3.Clear();
-                    }
-                }
-                #endregion
+                //        Rot = 0;
+                //        rot1.Clear();
+                //        rot2.Clear();
+                //        rot3.Clear();
+                //    }
+                //}
+                //#endregion
 
                 #region reposiciona ángulos; switch orientación (6x4)
 
@@ -347,7 +347,7 @@ namespace IMU_gNeC
                         switch (rotation)
                         {
                             case 2:
-                                if (rom2 > 0)
+                                if (rom > 0)      //rom2 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = pitch;
@@ -362,7 +362,7 @@ namespace IMU_gNeC
                                 break;
 
                             case 3:
-                                if (rom3 > 0)
+                                if (rom > 0)       //rom3 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = roll;
@@ -397,7 +397,7 @@ namespace IMU_gNeC
                         switch (rotation)
                         {
                             case 2:
-                                if (rom2 > 0)
+                                if (rom > 0)        //rom2 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = pitch;
@@ -412,7 +412,7 @@ namespace IMU_gNeC
                                 break;
 
                             case 3:
-                                if (rom3 > 0)
+                                if (rom > 0)        //rom3 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = roll;
@@ -446,7 +446,7 @@ namespace IMU_gNeC
                         switch (rotation)
                         {
                             case 2:
-                                if (rom2 > 0)
+                                if (rom > 0)       //rom2 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = pitch;
@@ -460,7 +460,7 @@ namespace IMU_gNeC
                                 }
                                 break;
                             case 3:
-                                if (rom3 > 0)
+                                if (rom > 0)       //rom3 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = roll;
@@ -493,7 +493,7 @@ namespace IMU_gNeC
                         switch (rotation)
                         {
                             case 2:
-                                if (rom2 > 0)
+                                if (rom > 0)       //rom2 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = pitch;
@@ -507,7 +507,7 @@ namespace IMU_gNeC
                                 }
                                 break;
                             case 3:
-                                if (rom3 > 0)
+                                if (rom > 0)       //rom3 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = roll;
@@ -541,7 +541,7 @@ namespace IMU_gNeC
                         switch (rotation)
                         {
                             case 2:
-                                if (rom2 > 0)
+                                if (rom > 0)       //rom2 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = pitch;
@@ -556,7 +556,7 @@ namespace IMU_gNeC
                                 break;
 
                             case 3:
-                                if (rom3 > 0)
+                                if (rom > 0)       //rom3 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = roll;
@@ -591,7 +591,7 @@ namespace IMU_gNeC
                         switch (rotation)
                         {
                             case 2:
-                                if (rom2 > 0)
+                                if (rom > 0)       //rom2 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = pitch;
@@ -605,7 +605,7 @@ namespace IMU_gNeC
                                 }
                                 break;
                             case 3:
-                                if (rom3 > 0)
+                                if (rom > 0)       //rom3 
                                 {
                                     globalYaw = yaw;
                                     globalPitch = roll;
@@ -808,6 +808,9 @@ namespace IMU_gNeC
 			ImuConfigPar.secundaryAngle2ROMangle = setupParametersArg.secundaryAngle2ROMangle;
 			ImuConfigPar.timePerm = setupParametersArg.timePerm;
 			ImuConfigPar.thetaPerm = setupParametersArg.thetaPerm;
+            ImuConfigPar.or_init = setupParametersArg.or_init;
+            ImuConfigPar.rotation = setupParametersArg.rotation;
+            ImuConfigPar.rom = setupParametersArg.rom;
 
 			VHRgameConfigured = true;
 		}
